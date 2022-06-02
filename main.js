@@ -54,6 +54,10 @@ async function loadWind(url) {
     let forecastLabel = formatDate(forecastDate);
 
     layerControl.addOverlay(overlays.wind, `ECMWF Windvorhersage für ${forecastLabel}`)
+
+    L.velocityLayer({
+        data: jsondata
+    }).addTo(overlays.wind);
 };
 loadWind("https://geographie.uibk.ac.at/webmapping/ecmwf/data/wind-10u-10v-europe.json");
 
