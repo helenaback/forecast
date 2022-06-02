@@ -28,41 +28,61 @@ L.control.scale({
     imperial: false
 }).addTo(map);
 
-// Datum formatiere
+// Datum formatieren
 let formatDate = function(date) {
-    return date.toLocaleDateString("de-AT",{
+    return date.toLocaleDateString("de-AT", {
         month: "long",
         day: "numeric",
         hour: "2-digit",
-        minute: "2-digit",
-    }) + "Uhr";
+        minute: "2-digit"
+      
+    })  + "Uhr";
+
 }
+
 
 // Windvorhersage
 async function loadWind(url) {
     const response = await fetch(url);
     const jsondata = await response.json();
-    //console.log("Jsondata",jsondata);
-    //console.log("Zeitpunkt erstellung", jsondata[0].header.refTime);
-    
+    //console.log("Jsondaten", jsondata)
+    //console.log("Zeitpunkt Erstellung", jsondata[0].header.refTime);
+    //console.log("Zeitpunkt Vorhersage (+Stunden)", jsondata[0].header.forecastTime);
 
     let forecastDate = new Date(jsondata[0].header.refTime);
-    //console.log(forecastDate);
-    forecastDate.setHours(forecastDate.getHours() + jsondata[0].header.forecastTime);
-
+    //console.log("Echtes Datum Erstellung", forecastDate);
+    forecastDate.setHours(forecastDate.getHours() + jsondata[0].header.forecastTime)
+    //console.log("Echtes Datum Vorhersage", forecastDate);
 
     let forecastLabel = formatDate(forecastDate);
-
+    //console.log("Vorhersagezeitpunkt", formatDate);
     layerControl.addOverlay(overlays.wind, `ECMWF Windvorhersage für ${forecastLabel}`)
 
     L.velocityLayer({
-        data: jsondata
+        data: jsondata,
+        lineWidth: 2,
+        displayOptions:{
+            velocityType: "",
+            directionString: "Windrichtung",
+            speedString: "Windgeschweindigkeit", 
+            speedUnit: "k/h",
+            emptyString: "keine Daten vorhanden",
+            position: "bottomright"
+        }
     }).addTo(overlays.wind);
 };
-loadWind("https://geographie.uibk.ac.at/webmapping/ecmwf/data/wind-10u-10v-europe.json");
 
+loadWind("https://geographie.uibk.ac.at/webmapping/ecmwf/data/wind-10u-10v-europe.json");
 // Wettervorhersage
 async function loadWeather(url) {
+    const response = await fetch(url);
+    const jsondata = await response.json();
+
+    layerControl.addOverlay(overlays.weather, "Wettervorhersage met. no")
+
+    let marker = L.circleMarker([
+        47.267222, 11.392778
+    ]).binPopup("Wettervorhersage").addTo(overlays.weather);
 
 };
 loadWeather("https://api.met.no/weatherapi/locationforecast/2.0/compact?lat=47.267222&lon=11.392778");
