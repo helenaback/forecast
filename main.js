@@ -107,13 +107,13 @@ let popup = `
     <li>Niederschlag: ${details.precipitation_amount} (mm)</li>
     <li>Relative Luftfeuchtigkeit ${details.relative_humidity} (%)</li>
     <li>Windrichtung ${details.wind_from_direction} (°)</li>
-    <li>Windgeschwindigkeit ${details.wind_speed*3.6} (km/h)</li>
+    <li>Windgeschwindigkeit ${details.wind_speed*3.6.toFixed} (km/h)</li>
 </ul>
 `;
 
 //Wettericon(s)
 for (let i=0; i <= 24; i+=3){
-    let symbol = jsondata.properties.timeseries[0].data.next_1_hours.summary.symbol_code;
+    let symbol = jsondata.properties.timeseries[i].data.next_1_hours.summary.symbol_code;
     let forecastDate = new Date(jsondata.properties.timeseries[i].time);
     let forecastLabel = formatDate(forecastDate);
 
