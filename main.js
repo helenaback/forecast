@@ -85,7 +85,7 @@ async function loadWeather(url) {
     const response = await fetch(url);
     const jsondata = await response.json();
 
-    markersetLatLng([
+    marker.setLatLng([
         jsondata.geometry.coordinates[1],
         jsondata.geometry.coordinates[0]
     ])
@@ -93,22 +93,33 @@ async function loadWeather(url) {
     let details = jsondata.properties.timeseries[0].data.instant.details;
     //console.log("Aktuelle Wetterdaten", details);
 
+    let forecastDate = new Date(jsondata.properties.timeseries[0].time);
+    let forecastLabel = formatDate(forecastDate)
+
     let popup = `
-    <ul>
-        <li>Luftdruck: ${details.air_pressure_at_sea_level} (hPa)</li>
-        <li>Lufttemperatur: ${details.air_temperature} (°C)</li>
-        <li>Bewölkung: ${details.cloud_area_fraction} (%)</li>
-        <li>Niederschlag: ${details.precipitation_amount} (mm)</li>
-        <li>Relative Luftfeuchtigkeit: ${details.relative_humidity} (%)</li>
-        <li>Windrichtung: ${details.wind_from_direction} (°)</li>
-        <li>Windgeschwindigkeit: ${details.wind_speed*3.6} (km/h)</li>
-        </ul>
-    `;
+<strong>Wettervorhersage für ${forecastLabel}</strong>
+<ul>
+    <li>Luftdruck: ${details.air_pressure_at_sea_level} (hPa)</li>
+    <li>Lufttemperatur: ${details.air_temperature} (°C)</li>
+    <li>Bevölkung: ${details.cloud_area_fraction} (%)</li>
+    <li>Niederschlag: ${details.precipitation_amount} (mm)</li>
+    <li>Relative Luftfeuchtigkeit ${details.relative_humidity} (%)</li>
+    <li>Windrichtung ${details.wind_from_direction} (°)</li>
+    <li>Windgeschwindigkeit ${details.wind_speed*3.6} (km/h)</li>
+</ul>
+`;
 
-    marker.setPopupContent(popup).openPopup();
+marker.setPopupContent(popup).openPopup();
+
+
 };
-
-
-
-
 loadWeather("https://api.met.no/weatherapi/locationforecast/2.0/compact?lat=47.267222&lon=11.392778")
+
+//Klick auf die Karte
+map.on("click", function(evt) {
+    console.log(evt);
+
+    let url = `https://api.met.no/weatherapi/locationforecast/2.0/compact?lat=${evt.latlng.lat}&lon=${evt.latlng.lng}`;
+
+    loadWeather(url);
+});
