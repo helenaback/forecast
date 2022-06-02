@@ -96,12 +96,14 @@ async function loadWeather(url) {
     let forecastDate = new Date(jsondata.properties.timeseries[0].time);
     let forecastLabel = formatDate(forecastDate)
 
-    let popup = `
+
+
+let popup = `
 <strong>Wettervorhersage für ${forecastLabel}</strong>
 <ul>
     <li>Luftdruck: ${details.air_pressure_at_sea_level} (hPa)</li>
     <li>Lufttemperatur: ${details.air_temperature} (°C)</li>
-    <li>Bevölkung: ${details.cloud_area_fraction} (%)</li>
+    <li>Bewölkung: ${details.cloud_area_fraction} (%)</li>
     <li>Niederschlag: ${details.precipitation_amount} (mm)</li>
     <li>Relative Luftfeuchtigkeit ${details.relative_humidity} (%)</li>
     <li>Windrichtung ${details.wind_from_direction} (°)</li>
@@ -109,7 +111,15 @@ async function loadWeather(url) {
 </ul>
 `;
 
+//Wettericon(s)
+for (let i=0; i <= 24; i+=3){
+    let symbol = jsondata.properties.timeseries[0].data.next_1_hours.summary.symbol_code;
+popup += `<img src="icons/${symbol}.svg" alt="${symbol}" style="width:32px">`;
+}
+
+
 marker.setPopupContent(popup).openPopup();
+
 
 
 };
